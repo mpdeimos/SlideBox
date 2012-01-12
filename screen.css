@@ -1,0 +1,10 @@
+.slideBox input {display: none;}
+.slideBox { display: inline-block; outline: 1px solid #66F; border: 1px solid white; position: relative; overflow: hidden; }
+.slideBox > label { display: block; position: relative; left: 0;}
+.slideBox > label > span { display: inline-block; color: white; font-size: 12px; text-align: center; padding: 0 10px; font-family: sans-serif}
+.slideBox .slideOff { background-color: #AAF; }
+.slideBox .slideOn { background-color: #66F; }
+
+.slideBox.redGreen {outline-color: grey; }
+.slideBox.redGreen .slideOff { background-color: red; }
+.slideBox.redGreen .slideOn { background-color: green; }
