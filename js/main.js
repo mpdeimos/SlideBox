@@ -7,9 +7,10 @@
       }), this);
     }
     SlideBox.prototype.init = function(e) {
-      var delta, downX, dragging, end, firstActive, m, slideFirst, slideOff, slideOn, slideSecond, slider, sliderX, toggle, w;
+      var checkbox, delta, downX, dragging, end, firstActive, m, mychange, slideFirst, slideOff, slideOn, slideSecond, slider, sliderX, toggle, updateFromCheckbox, w;
       slideOff = e.child('.slideOff');
       slideOn = e.child('.slideOn');
+      checkbox = e.child('input[type=checkbox]');
       if (slideOff.getLeft() < slideOn.getLeft()) {
         slideFirst = slideOff;
         slideSecond = slideOn;
@@ -39,21 +40,39 @@
       sliderX = 0;
       delta = 0;
       firstActive = true;
-      toggle = function() {
-        firstActive = !firstActive;
+      mychange = false;
+      toggle = function(onoff) {
+        var active;
+        mychange = true;
+        if (onoff != null) {
+          firstActive = !onoff;
+          if (slideFirst === slideOn) {
+            firstActive = onoff;
+          }
+        } else {
+          firstActive = !firstActive;
+        }
         if (firstActive) {
-          return slider.animate({
+          slider.animate({
             left: {
               to: 0
             }
           }, .2);
         } else {
-          return slider.animate({
+          slider.animate({
             left: {
               to: -w + m
             }
           }, .2);
         }
+        if (null !== checkbox) {
+          active = firstActive;
+          if (slideFirst === slideOn) {
+            active = !active;
+          }
+          checkbox.dom.checked = !active;
+        }
+        return mychange = false;
       };
       slider.on("mousedown", function(evt) {
         downX = evt.getXY()[0];
@@ -86,7 +105,19 @@
         return evt.stopEvent();
       };
       slider.on("mouseup", end);
-      return slider.on("mouseleave", end);
+      slider.on("mouseleave", end);
+      slider.on("click", function(evt) {
+        return evt.stopEvent();
+      });
+      if (checkbox) {
+        updateFromCheckbox = function() {
+          if (!mychange) {
+            return toggle(checkbox.dom.checked);
+          }
+        };
+        checkbox.on("change", updateFromCheckbox);
+        return updateFromCheckbox();
+      }
     };
     return SlideBox;
   })();

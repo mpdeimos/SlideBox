@@ -7,8 +7,10 @@ class SlideBox
 			return
 		), this
 	init: (e) ->
-		slideOff = e.child('.slideOff');
-		slideOn = e.child('.slideOn');
+		slideOff = e.child '.slideOff';
+		slideOn = e.child '.slideOn';
+		checkbox = e.child 'input[type=checkbox]';
+		
 		if (slideOff.getLeft() < slideOn.getLeft())
 			slideFirst = slideOff
 			slideSecond = slideOn
@@ -34,13 +36,25 @@ class SlideBox
 		sliderX = 0
 		delta = 0
 		firstActive = true
-		toggle = ->
-			firstActive = !firstActive
+		mychange = false
+		toggle = (onoff) ->
+			mychange = true
+			if onoff?
+				firstActive = !onoff
+				firstActive = onoff if slideFirst == slideOn
+			else
+				firstActive = !firstActive
 			
 			if firstActive
 				slider.animate left: {to: 0}, .2
 			else
 				slider.animate left: {to: -w+m}, .2
+				
+			if null != checkbox
+				active = firstActive
+				active = !active if slideFirst == slideOn
+				checkbox.dom.checked = !active
+			mychange = false
 				
 		slider.on "mousedown", (evt) ->
 			[downX, ] = evt.getXY()
@@ -73,5 +87,11 @@ class SlideBox
 			
 		slider.on "mouseup", end
 		slider.on "mouseleave", end
+		slider.on "click", (evt) -> evt.stopEvent()
+		
+		if checkbox
+			updateFromCheckbox = -> toggle checkbox.dom.checked if not mychange
+			checkbox.on "change", updateFromCheckbox
+			updateFromCheckbox()
 			
 this.Z = new SlideBox
