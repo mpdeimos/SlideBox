@@ -1,4 +1,5 @@
 .slideBox { display: inline-block; outline: 1px solid #66F; border: 1px solid white; position: relative; overflow: hidden; }
+.slideBox input {display: none;}
 .slideBox > label { display: block; position: relative; left: 0;}
 .slideBox > label > span { display: inline-block; color: white; font-size: 12px; text-align: center; padding: 0 10px; font-family: sans-serif}
 .slideBox .slideBoxOff { background-color: #AAF; }

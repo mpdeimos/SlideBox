@@ -61,22 +61,28 @@ class SlideBox
 				otherBox?.dom.checked = active
 			mychange = false
 				
-		slider.on "mousedown", (evt) ->
+		down = (evt) ->
 			[downX, ] = evt.getXY()
+			downX = evt.browserEvent.touches?.item(0)?.clientX if evt.browserEvent.touches?
 			sliderX = slider.getX()
 			evt.stopEvent()
+		slider.on "mousedown", down
+		slider.on "touchstart", down
 			
-		slider.on "mousemove", (evt) ->
+		move = (evt) ->
 			if downX == false
 				return
 				
 			[x, ] = evt.getXY()
+			x = evt.browserEvent.touches?.item(0)?.clientX if evt.browserEvent.touches?
 			delta = x - downX
 			delta = Math.max((-w+m)*firstActive, Math.min((w-m)*!firstActive, delta))
 			dragging = true
 			slider.setLeft (-w+m)*!firstActive + delta
 				
 			evt.stopEvent()
+		slider.on "mousemove", move
+		slider.on "touchmove", move
 			
 		end = (evt) ->
 			if downX == false
@@ -89,9 +95,11 @@ class SlideBox
 			delta = 0
 			toggle()
 			evt.stopEvent()
-			
 		slider.on "mouseup", end
 		slider.on "mouseleave", end
+		slider.on "touchend", end
+		slider.on "touchcancel", end
+		
 		slider.on "click", (evt) -> evt.stopEvent()
 		
 		if checkbox

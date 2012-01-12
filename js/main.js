@@ -7,7 +7,7 @@
       }), this);
     }
     SlideBox.prototype.init = function(e) {
-      var checkbox, delta, downX, dragging, end, firstActive, m, mychange, otherBox, slideFirst, slideOff, slideOn, slideSecond, slider, sliderX, toggle, updateFromCheckbox, w;
+      var checkbox, delta, down, downX, dragging, end, firstActive, m, move, mychange, otherBox, slideFirst, slideOff, slideOn, slideSecond, slider, sliderX, toggle, updateFromCheckbox, w;
       slideOff = e.child('.slideBoxOff');
       slideOn = e.child('.slideBoxOn');
       slider = e.child('label');
@@ -85,23 +85,34 @@
         }
         return mychange = false;
       };
-      slider.on("mousedown", function(evt) {
+      down = function(evt) {
+        var _ref, _ref2;
         downX = evt.getXY()[0];
+        if (evt.browserEvent.touches != null) {
+          downX = (_ref = evt.browserEvent.touches) != null ? (_ref2 = _ref.item(0)) != null ? _ref2.clientX : void 0 : void 0;
+        }
         sliderX = slider.getX();
         return evt.stopEvent();
-      });
-      slider.on("mousemove", function(evt) {
-        var x;
+      };
+      slider.on("mousedown", down);
+      slider.on("touchstart", down);
+      move = function(evt) {
+        var x, _ref, _ref2;
         if (downX === false) {
           return;
         }
         x = evt.getXY()[0];
+        if (evt.browserEvent.touches != null) {
+          x = (_ref = evt.browserEvent.touches) != null ? (_ref2 = _ref.item(0)) != null ? _ref2.clientX : void 0 : void 0;
+        }
         delta = x - downX;
         delta = Math.max((-w + m) * firstActive, Math.min((w - m) * !firstActive, delta));
         dragging = true;
         slider.setLeft((-w + m) * !firstActive + delta);
         return evt.stopEvent();
-      });
+      };
+      slider.on("mousemove", move);
+      slider.on("touchmove", move);
       end = function(evt) {
         if (downX === false) {
           return;
@@ -117,6 +128,8 @@
       };
       slider.on("mouseup", end);
       slider.on("mouseleave", end);
+      slider.on("touchend", end);
+      slider.on("touchcancel", end);
       slider.on("click", function(evt) {
         return evt.stopEvent();
       });
