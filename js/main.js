@@ -7,10 +7,19 @@
       }), this);
     }
     SlideBox.prototype.init = function(e) {
-      var checkbox, delta, downX, dragging, end, firstActive, m, mychange, slideFirst, slideOff, slideOn, slideSecond, slider, sliderX, toggle, updateFromCheckbox, w;
-      slideOff = e.child('.slideOff');
-      slideOn = e.child('.slideOn');
-      checkbox = e.child('input[type=checkbox]');
+      var checkbox, delta, downX, dragging, end, firstActive, m, mychange, otherBox, slideFirst, slideOff, slideOn, slideSecond, slider, sliderX, toggle, updateFromCheckbox, w;
+      slideOff = e.child('.slideBoxOff');
+      slideOn = e.child('.slideBoxOn');
+      slider = e.child('label');
+      checkbox = Ext.get(slider.getAttribute('for'));
+      otherBox = null;
+      if ((checkbox != null ? checkbox.getAttribute('type') : void 0) === "radio") {
+        e.select('input[type=radio]').each(function(c) {
+          if (c !== checkbox) {
+            return otherBox = c;
+          }
+        });
+      }
       if (slideOff.getLeft() < slideOn.getLeft()) {
         slideFirst = slideOff;
         slideSecond = slideOn;
@@ -18,7 +27,6 @@
         slideFirst = slideOn;
         slideSecond = slideOff;
       }
-      slider = e.child('label');
       if (slideFirst.getWidth() > slideSecond.getWidth()) {
         w = slideFirst.getWidth();
         m = slideSecond.getBorderWidth("l") + slideSecond.getPadding("l");
@@ -71,6 +79,9 @@
             active = !active;
           }
           checkbox.dom.checked = !active;
+          if (otherBox != null) {
+            otherBox.dom.checked = active;
+          }
         }
         return mychange = false;
       };
@@ -116,6 +127,13 @@
           }
         };
         checkbox.on("change", updateFromCheckbox);
+        if (otherBox != null) {
+          otherBox.on("change", function() {
+            if (!mychange) {
+              return toggle(!otherBox.dom.checked);
+            }
+          });
+        }
         return updateFromCheckbox();
       }
     };

@@ -7,9 +7,14 @@ class SlideBox
 			return
 		), this
 	init: (e) ->
-		slideOff = e.child '.slideOff';
-		slideOn = e.child '.slideOn';
-		checkbox = e.child 'input[type=checkbox]';
+		slideOff = e.child '.slideBoxOff';
+		slideOn = e.child '.slideBoxOn';
+		slider = e.child('label');
+		checkbox = Ext.get(slider.getAttribute('for'))
+		otherBox = null;
+		if checkbox?.getAttribute('type') == "radio"
+			e.select('input[type=radio]').each (c) ->
+				otherBox = c if c != checkbox
 		
 		if (slideOff.getLeft() < slideOn.getLeft())
 			slideFirst = slideOff
@@ -18,7 +23,6 @@ class SlideBox
 			slideFirst = slideOn
 			slideSecond = slideOff
 			
-		slider = e.child('label');
 		if slideFirst.getWidth() > slideSecond.getWidth()
 			w = slideFirst.getWidth()
 			m = slideSecond.getBorderWidth("l") + slideSecond.getPadding("l");
@@ -54,6 +58,7 @@ class SlideBox
 				active = firstActive
 				active = !active if slideFirst == slideOn
 				checkbox.dom.checked = !active
+				otherBox?.dom.checked = active
 			mychange = false
 				
 		slider.on "mousedown", (evt) ->
@@ -92,6 +97,7 @@ class SlideBox
 		if checkbox
 			updateFromCheckbox = -> toggle checkbox.dom.checked if not mychange
 			checkbox.on "change", updateFromCheckbox
+			otherBox?.on "change", -> toggle !otherBox.dom.checked if not mychange
 			updateFromCheckbox()
 			
 this.Z = new SlideBox
